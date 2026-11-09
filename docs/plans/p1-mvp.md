@@ -47,8 +47,8 @@ Languages for output: English, Simplified Chinese, Vietnamese, Nepali, Korean, P
 - Create `package.json` (scripts: `build` = esbuild `src/web/app.ts` → `public/app.js`; `dev` = `wrangler dev -c wrangler.offline.jsonc --port 8799`; `test` = vitest), `tsconfig.json`, `wrangler.jsonc`, `wrangler.offline.jsonc`, `.gitignore` (node_modules, dist-dry, .wrangler, demo-out), MIT `LICENSE` (copyright "2026 Shotaro Takakura").
 - `samples/`: 5 realistic **synthetic** letters (no real person's data; fictional names like 山田 花子 are not needed — address them to "LEE MINH ANH" etc. with fictional addresses in 渋谷区) as both `.txt` (the Japanese text) and a rendered PNG (render the text into an A4-like image with a headless browser script `scripts/render-samples.mjs`, committed outputs). Letters: (a) 特別区民税・都民税 納税通知書 with 4 instalments and due dates, (b) 国民健康保険料 納入通知書, (c) 国民年金 学生納付特例 申請のご案内, (d) マイナンバーカード 有効期限通知 (電子証明書の更新), (e) 督促状 (reminder with 延滞金 wording). Base wording on the public templates municipalities publish; keep amounts and dates fictional (fiscal year 2026).
 - `samples/expected/*.json`: the hand-checked analysis for each sample (used by tests and by the offline fallback).
-- [ ] `npm run build` and `npx tsc --noEmit` pass on the scaffold
-- [ ] 5 samples × (txt, png, expected json) committed
+- [x] `npm run build` and `npx tsc --noEmit` pass on the scaffold
+- [x] 5 samples × (txt, png, expected json) committed
 Do NOT implement: any UI beyond a placeholder page.
 
 ### Task 2: Analysis schema and deterministic extractors

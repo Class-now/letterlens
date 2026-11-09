@@ -1,0 +1,293 @@
+{
+  "docType": "health_insurance",
+  "sender": "Shibuya City Office, National Health Insurance Division (渋谷区 区民部 国民健康保険課)",
+  "summary": "This is your National Health Insurance premium notice for fiscal year 2026. The yearly premium is 87,000 yen, paid in 10 instalments of 8,700 yen from June 2026 to March 2027.",
+  "actions": [
+    {
+      "title": "Pay health insurance premium, instalment 1 of 10",
+      "deadline": {
+        "date": "2026-06-30",
+        "source": {
+          "text": "6月30日",
+          "start": 299,
+          "end": 304
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 308,
+          "end": 314
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 2 of 10",
+      "deadline": {
+        "date": "2026-07-31",
+        "source": {
+          "text": "7月31日",
+          "start": 319,
+          "end": 324
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 328,
+          "end": 334
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 3 of 10",
+      "deadline": {
+        "date": "2026-08-31",
+        "source": {
+          "text": "8月31日",
+          "start": 339,
+          "end": 344
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 348,
+          "end": 354
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 4 of 10",
+      "deadline": {
+        "date": "2026-09-30",
+        "source": {
+          "text": "9月30日",
+          "start": 359,
+          "end": 364
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 368,
+          "end": 374
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 5 of 10",
+      "deadline": {
+        "date": "2026-11-02",
+        "source": {
+          "text": "11月2日",
+          "start": 379,
+          "end": 384
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 388,
+          "end": 394
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 6 of 10",
+      "deadline": {
+        "date": "2026-11-30",
+        "source": {
+          "text": "11月30日",
+          "start": 399,
+          "end": 405
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 409,
+          "end": 415
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 7 of 10",
+      "deadline": {
+        "date": "2026-12-28",
+        "source": {
+          "text": "12月28日",
+          "start": 420,
+          "end": 426
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 430,
+          "end": 436
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 8 of 10",
+      "deadline": {
+        "date": "2027-02-01",
+        "source": {
+          "text": "2月1日",
+          "start": 441,
+          "end": 445
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 449,
+          "end": 455
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 9 of 10",
+      "deadline": {
+        "date": "2027-03-01",
+        "source": {
+          "text": "3月1日",
+          "start": 460,
+          "end": 464
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 468,
+          "end": 474
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay health insurance premium, instalment 10 of 10",
+      "deadline": {
+        "date": "2027-03-31",
+        "source": {
+          "text": "3月31日",
+          "start": 480,
+          "end": 485
+        }
+      },
+      "amountYen": {
+        "value": 8700,
+        "source": {
+          "text": "8,700円",
+          "start": 489,
+          "end": 495
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the city office counter",
+        "Or pay with a smartphone payment app, or set up automatic bank debit"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "consequences": [
+    {
+      "text": "If you fall behind on payments, you may get an insurance certificate valid for a shorter period, or you may have to pay the full medical cost first.",
+      "source": {
+        "text": "保険料を滞納すると、",
+        "start": 583,
+        "end": 593
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "国民健康保険料",
+      "reading": "こくみんけんこうほけんりょう",
+      "meaning": "National Health Insurance premium"
+    },
+    {
+      "term": "納入通知書",
+      "reading": "のうにゅうつうちしょ",
+      "meaning": "payment notice"
+    },
+    {
+      "term": "世帯主",
+      "reading": "せたいぬし",
+      "meaning": "head of household"
+    },
+    {
+      "term": "資格確認書",
+      "reading": "しかくかくにんしょ",
+      "meaning": "insurance eligibility certificate (used instead of the old insurance card)"
+    },
+    {
+      "term": "軽減",
+      "reading": "けいげん",
+      "meaning": "reduction (of the premium)"
+    },
+    {
+      "term": "申告",
+      "reading": "しんこく",
+      "meaning": "income declaration"
+    }
+  ],
+  "warnings": [
+    "If your income is low, the premium may be reduced. If you have not declared last year's income, declare it at the city office."
+  ],
+  "language": "en"
+}

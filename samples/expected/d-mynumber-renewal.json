@@ -1,0 +1,72 @@
+{
+  "docType": "mynumber_renewal",
+  "sender": "Shibuya City Office, Family Register and Resident Records Division (渋谷区 戸籍住民課) / J-LIS",
+  "summary": "The electronic certificates on your My Number Card expire on January 15, 2027. Renew them for free at Shibuya City Office before then.",
+  "actions": [
+    {
+      "title": "Renew the electronic certificates on your My Number Card",
+      "deadline": {
+        "date": "2027-01-15",
+        "source": {
+          "text": "令和9年1月15日",
+          "start": 267,
+          "end": 276
+        }
+      },
+      "amountYen": {
+        "value": 0,
+        "source": {
+          "text": "手数料は無料です",
+          "start": 401,
+          "end": 409
+        }
+      },
+      "how": [
+        "Go in person to the Family Register and Resident Records counter (戸籍住民課) at Shibuya City Office, weekdays 8:30 to 17:00",
+        "Bring your My Number Card, this notice, and your card PINs (a 4-digit number and a 6–16 character alphanumeric password)"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "consequences": [
+    {
+      "text": "After the expiry date you cannot use the card as a health insurance card, get certificates at convenience stores, log in to Mynaportal, or file online (e-Tax).",
+      "source": {
+        "text": "有効期限が過ぎると、",
+        "start": 278,
+        "end": 288
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "電子証明書",
+      "reading": "でんししょうめいしょ",
+      "meaning": "electronic certificate (digital ID stored on the card)"
+    },
+    {
+      "term": "有効期限",
+      "reading": "ゆうこうきげん",
+      "meaning": "expiry date"
+    },
+    {
+      "term": "暗証番号",
+      "reading": "あんしょうばんごう",
+      "meaning": "PIN / password"
+    },
+    {
+      "term": "戸籍住民課",
+      "reading": "こせきじゅうみんか",
+      "meaning": "resident records division of the city office"
+    },
+    {
+      "term": "在留期間",
+      "reading": "ざいりゅうきかん",
+      "meaning": "period of stay (on your residence card)"
+    }
+  ],
+  "warnings": [
+    "Your My Number Card itself expires on the same day as your period of stay. If you extend your status, change the card's validity within 14 days."
+  ],
+  "language": "en"
+}

@@ -1,0 +1,85 @@
+{
+  "docType": "reminder",
+  "sender": "Shibuya City Office, Tax Division, Collection Section (渋谷区 区民部 税務課 収納係)",
+  "summary": "This is a payment reminder (督促状). The 2nd instalment of your fiscal 2026 resident tax, 24,500 yen, was due on August 31, 2026 and has not been paid. Pay it by September 25, 2026.",
+  "actions": [
+    {
+      "title": "Pay the overdue 2nd instalment of resident tax",
+      "deadline": {
+        "date": "2026-09-25",
+        "source": {
+          "text": "令和８年９月２５日",
+          "start": 277,
+          "end": 286
+        }
+      },
+      "amountYen": {
+        "value": 24500,
+        "source": {
+          "text": "２４，５００円",
+          "start": 254,
+          "end": 261
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, convenience store, or the Shibuya City Office tax counter",
+        "If paying is difficult, contact the Collection Section before the deadline to ask about paying in parts"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "consequences": [
+    {
+      "text": "Late fees are added from the day after the original deadline: 2.4% per year for the first month, then 8.7% per year. The amount will be sent to you later.",
+      "source": {
+        "text": "延滞金の割合は、",
+        "start": 357,
+        "end": 365
+      }
+    },
+    {
+      "text": "If you do not pay by the deadline, the city may seize property such as your salary or bank savings under the Local Tax Act.",
+      "source": {
+        "text": "指定期限までに納付がない場合は、",
+        "start": 426,
+        "end": 442
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "督促状",
+      "reading": "とくそくじょう",
+      "meaning": "payment reminder / demand letter"
+    },
+    {
+      "term": "指定期限",
+      "reading": "していきげん",
+      "meaning": "new deadline set in this reminder"
+    },
+    {
+      "term": "未納税額",
+      "reading": "みのうぜいがく",
+      "meaning": "unpaid tax amount"
+    },
+    {
+      "term": "延滞金",
+      "reading": "えんたいきん",
+      "meaning": "late payment charge"
+    },
+    {
+      "term": "差押え",
+      "reading": "さしおさえ",
+      "meaning": "seizure of property"
+    },
+    {
+      "term": "滞納処分",
+      "reading": "たいのうしょぶん",
+      "meaning": "enforcement action for unpaid tax"
+    }
+  ],
+  "warnings": [
+    "If you already paid, you can ignore this reminder (the letters crossed in the mail)."
+  ],
+  "language": "en"
+}

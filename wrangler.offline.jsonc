@@ -1,0 +1,12 @@
+// Same worker without the AI binding: /api/analyze uses the deterministic fallback, no Cloudflare login needed.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "letterlens",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  }
+}
