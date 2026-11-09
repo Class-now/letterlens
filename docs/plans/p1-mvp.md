@@ -56,7 +56,7 @@ Do NOT implement: any UI beyond a placeholder page.
 - `src/extract.ts`: deterministic parsers over the Japanese text: Japanese era and western dates (令和8年6月30日, 2026年6月30日, 6月30日(火) with year inferred from context, full-width digits), yen amounts (12,300円, ￥12,300, 金額 欄), instalment tables (第1期…第4期). Return spans. These validate and override LLM output: an LLM date or amount that does not appear in the text is dropped and the field marked low confidence.
 - `src/doc-types.ts`: keyword classifier for the 5 doc types plus `unknown`, with per-type guidance (where to pay, what office, official multilingual links) as static data with source URLs.
 - Tests for every parser with tricky cases (era boundary 平成31/令和元, full-width, ranges like 6月1日から6月30日まで).
-- [ ] extractor tests pass, including all 5 samples matching `samples/expected`
+- [x] extractor tests pass, including all 5 samples matching `samples/expected`
 Do NOT implement: LLM calls.
 
 ### Task 3: AI pipeline
