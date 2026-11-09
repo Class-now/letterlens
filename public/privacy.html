@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy — LetterLens</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font: 16px/1.6 system-ui, sans-serif; max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.15rem; margin-top: 1.8rem; }
+  </style>
+</head>
+<body>
+  <p><a href="/">← LetterLens</a></p>
+  <h1>Privacy</h1>
+  <p>LetterLens explains letters from Japanese offices. Letters often contain your name, address and other personal data, so the service is built to keep as little as possible.</p>
+
+  <h2>What happens to your letter</h2>
+  <ul>
+    <li>Your photo or text is sent to our server only to be read and explained, then discarded. Letters are not stored: there is no database, no file storage and no account.</li>
+    <li>Letter text and photos are not written to logs. The server keeps only the standard request metadata Cloudflare records for every website (time, path, status).</li>
+    <li>Every API response is sent with <code>Cache-Control: no-store</code>, so browsers and proxies do not keep a copy.</li>
+    <li>Calendar files (.ics) are made in your browser. Your deadlines are not sent anywhere when you add them to your calendar.</li>
+    <li>Your language choice is saved only in your own browser (localStorage).</li>
+  </ul>
+
+  <h2>Who processes it</h2>
+  <p>The app runs on Cloudflare Workers. Reading the photo and writing the explanation is done by open models (Meta Llama 3.2 Vision and Llama 3.3) running on Cloudflare Workers AI. Cloudflare states that it does not use customer content sent to Workers AI to train models. No other third party receives your letter.</p>
+
+  <h2>Limits</h2>
+  <p>To prevent abuse, the server counts requests per IP address in memory for one minute (20 per minute). The count is not saved.</p>
+
+  <h2>Not legal advice</h2>
+  <p>AI can make mistakes. Always check the dates and amounts against the original letter. For help in your language, contact the <a href="https://www.moj.go.jp/isa/support/fresc/fresc01.html">Foreign Residents Support Center (FRESC)</a> or your city or ward office.</p>
+</body>
+</html>

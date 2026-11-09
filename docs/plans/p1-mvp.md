@@ -74,8 +74,8 @@ Do NOT implement: storage of any letter.
 ### Task 4: Calendar export and privacy
 - `GET`-less client-side `.ics` generation for each action with a deadline (VEVENT all-day, reminder 3 days before, summary in target language + Japanese title, description with amount and how-to).
 - Privacy: no logging of letter text (check `console.log` usage), `Cache-Control: no-store` on API responses, a `/privacy` static page explaining processing.
-- [ ] tests for ics output (valid RFC 5545 line folding, escaping)
-- [ ] grep shows no logging of request bodies
+- [x] tests for ics output (valid RFC 5545 line folding, escaping)
+- [x] grep shows no logging of request bodies
 
 ### Task 5: Web UI
 - Single page: header (logo text "LetterLens", tagline "Understand letters from Japanese offices"), language picker (persists in localStorage), three inputs: take/upload photo (`<input type=file accept="image/*" capture="environment">`), paste text, or "Try a sample" (the 5 samples as cards).
