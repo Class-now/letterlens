@@ -91,8 +91,8 @@ Do NOT implement: storage of any letter.
 - `docs/submission/devpost.md`: Inspiration / What it does / How we built it / Challenges / Accomplishments / What we learned / What's next / Built with. English, honest, no invented personal stories (the author is a Japanese university student studying foreign languages and cultures who sees international classmates struggle with these letters — keep it at that level of generality).
 - `docs/submission/video-script.md`: 2–3 minute narrated walkthrough with on-screen captions, scene by scene, using the samples.
 - `scripts/record-demo.mjs`: Playwright headless recording 1280×720 of the walkthrough against a base URL argument, with a caption overlay per scene (same idea as a fixed bottom caption div), output `demo-out/raw.webm` + `marks.json`.
-- [ ] README and submission docs complete
-- [ ] record script runs against the offline server and produces a webm
+- [x] README and submission docs complete
+- [x] record script runs against the offline server and produces a webm
 
 ## Out of scope
 Accounts, storing letters, payments, native apps, any real personal data in the repo, committing API keys.
