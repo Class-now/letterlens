@@ -1,0 +1,152 @@
+{
+  "docType": "resident_tax",
+  "sender": "Shibuya City Office, Tax Division (渋谷区 区民部 税務課)",
+  "summary": "This is your resident tax bill for fiscal year 2026 (Shibuya ward tax and Tokyo metropolitan tax). The total is 98,400 yen, paid in 4 instalments or all at once by June 30, 2026.",
+  "actions": [
+    {
+      "title": "Pay the 1st instalment of resident tax",
+      "deadline": {
+        "date": "2026-06-30",
+        "source": {
+          "text": "令和8年6月30日",
+          "start": 338,
+          "end": 347
+        }
+      },
+      "amountYen": {
+        "value": 24900,
+        "source": {
+          "text": "24,900円",
+          "start": 348,
+          "end": 355
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, post office bank (Japan Post Bank), convenience store, or the Shibuya City Office tax counter",
+        "Or pay with a smartphone payment app by scanning the slip's barcode, or online at the eLTAX payment site"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay the 2nd instalment of resident tax",
+      "deadline": {
+        "date": "2026-08-31",
+        "source": {
+          "text": "令和8年8月31日",
+          "start": 360,
+          "end": 369
+        }
+      },
+      "amountYen": {
+        "value": 24500,
+        "source": {
+          "text": "24,500円",
+          "start": 370,
+          "end": 377
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, post office bank (Japan Post Bank), convenience store, or the Shibuya City Office tax counter",
+        "Or pay with a smartphone payment app by scanning the slip's barcode, or online at the eLTAX payment site"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay the 3rd instalment of resident tax",
+      "deadline": {
+        "date": "2026-11-02",
+        "source": {
+          "text": "令和8年11月2日",
+          "start": 382,
+          "end": 391
+        }
+      },
+      "amountYen": {
+        "value": 24500,
+        "source": {
+          "text": "24,500円",
+          "start": 392,
+          "end": 399
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, post office bank (Japan Post Bank), convenience store, or the Shibuya City Office tax counter",
+        "Or pay with a smartphone payment app by scanning the slip's barcode, or online at the eLTAX payment site"
+      ],
+      "confidence": "high"
+    },
+    {
+      "title": "Pay the 4th instalment of resident tax",
+      "deadline": {
+        "date": "2027-02-01",
+        "source": {
+          "text": "令和9年2月1日",
+          "start": 404,
+          "end": 412
+        }
+      },
+      "amountYen": {
+        "value": 24500,
+        "source": {
+          "text": "24,500円",
+          "start": 413,
+          "end": 420
+        }
+      },
+      "how": [
+        "Pay with the enclosed payment slip at a bank, post office bank (Japan Post Bank), convenience store, or the Shibuya City Office tax counter",
+        "Or pay with a smartphone payment app by scanning the slip's barcode, or online at the eLTAX payment site"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "consequences": [
+    {
+      "text": "If you do not pay by the deadline, you will receive a reminder letter (督促状) and late fees (延滞金) may be charged for each day after the deadline.",
+      "source": {
+        "text": "納期限までに納付がない場合は、督促状を送付します。",
+        "start": 647,
+        "end": 672
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "納税通知書",
+      "reading": "のうぜいつうちしょ",
+      "meaning": "tax notice / tax bill"
+    },
+    {
+      "term": "特別区民税・都民税",
+      "reading": "とくべつくみんぜい・とみんぜい",
+      "meaning": "resident tax paid to your Tokyo ward and to Tokyo"
+    },
+    {
+      "term": "普通徴収",
+      "reading": "ふつうちょうしゅう",
+      "meaning": "you pay the tax yourself (not deducted from salary)"
+    },
+    {
+      "term": "納期限",
+      "reading": "のうきげん",
+      "meaning": "payment deadline"
+    },
+    {
+      "term": "第1期",
+      "reading": "だいいっき",
+      "meaning": "1st instalment"
+    },
+    {
+      "term": "延滞金",
+      "reading": "えんたいきん",
+      "meaning": "late payment charge"
+    },
+    {
+      "term": "口座振替",
+      "reading": "こうざふりかえ",
+      "meaning": "automatic bank debit"
+    }
+  ],
+  "warnings": [],
+  "language": "en"
+}

@@ -1,0 +1,82 @@
+{
+  "docType": "pension_student",
+  "sender": "Japan Pension Service, Shibuya Pension Office (日本年金機構 渋谷年金事務所)",
+  "summary": "This letter explains the Student Payment Special Exemption for the National Pension. If you are a student with low income, you can apply to postpone paying the pension premium (17,920 yen per month) for April 2026 to March 2027.",
+  "actions": [
+    {
+      "title": "Submit the Student Payment Special Exemption application",
+      "deadline": {
+        "date": "2026-05-29",
+        "source": {
+          "text": "令和8年5月29日（金）",
+          "start": 363,
+          "end": 375
+        }
+      },
+      "how": [
+        "Fill in the enclosed application form and attach a copy of your student ID (both sides) or a certificate of enrollment",
+        "Send it by mail to the Shibuya Pension Office with the return envelope, bring it to the National Pension counter at Shibuya City Office, or apply online via Mynaportal"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "consequences": [
+    {
+      "text": "If you neither apply nor pay, the months become unpaid, and you may not receive the disability or survivors' basic pension if something happens to you.",
+      "source": {
+        "text": "申請をせずに保険料を納めない場合は未納となり",
+        "start": 511,
+        "end": 533
+      }
+    },
+    {
+      "text": "If you stay unpaid, you may receive reminders, late fees may be charged, and your property may be seized.",
+      "source": {
+        "text": "未納が続くと督促を行い",
+        "start": 589,
+        "end": 600
+      }
+    }
+  ],
+  "glossary": [
+    {
+      "term": "国民年金",
+      "reading": "こくみんねんきん",
+      "meaning": "National Pension"
+    },
+    {
+      "term": "学生納付特例",
+      "reading": "がくせいのうふとくれい",
+      "meaning": "special exemption that lets students postpone pension payments"
+    },
+    {
+      "term": "第1号被保険者",
+      "reading": "だいいちごうひほけんしゃ",
+      "meaning": "category 1 insured person (students, self-employed, unemployed)"
+    },
+    {
+      "term": "申請書",
+      "reading": "しんせいしょ",
+      "meaning": "application form"
+    },
+    {
+      "term": "在学証明書",
+      "reading": "ざいがくしょうめいしょ",
+      "meaning": "certificate of enrollment"
+    },
+    {
+      "term": "追納",
+      "reading": "ついのう",
+      "meaning": "paying the postponed premiums later"
+    },
+    {
+      "term": "未納",
+      "reading": "みのう",
+      "meaning": "unpaid"
+    }
+  ],
+  "warnings": [
+    "Months approved for the exemption can be paid later (within 10 years) so that they count fully toward your pension."
+  ],
+  "language": "en"
+}

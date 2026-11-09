@@ -47,8 +47,8 @@ Languages for output: English, Simplified Chinese, Vietnamese, Nepali, Korean, P
 - Create `package.json` (scripts: `build` = esbuild `src/web/app.ts` → `public/app.js`; `dev` = `wrangler dev -c wrangler.offline.jsonc --port 8799`; `test` = vitest), `tsconfig.json`, `wrangler.jsonc`, `wrangler.offline.jsonc`, `.gitignore` (node_modules, dist-dry, .wrangler, demo-out), MIT `LICENSE` (copyright "2026 Shotaro Takakura").
 - `samples/`: 5 realistic **synthetic** letters (no real person's data; fictional names like 山田 花子 are not needed — address them to "LEE MINH ANH" etc. with fictional addresses in 渋谷区) as both `.txt` (the Japanese text) and a rendered PNG (render the text into an A4-like image with a headless browser script `scripts/render-samples.mjs`, committed outputs). Letters: (a) 特別区民税・都民税 納税通知書 with 4 instalments and due dates, (b) 国民健康保険料 納入通知書, (c) 国民年金 学生納付特例 申請のご案内, (d) マイナンバーカード 有効期限通知 (電子証明書の更新), (e) 督促状 (reminder with 延滞金 wording). Base wording on the public templates municipalities publish; keep amounts and dates fictional (fiscal year 2026).
 - `samples/expected/*.json`: the hand-checked analysis for each sample (used by tests and by the offline fallback).
-- [ ] `npm run build` and `npx tsc --noEmit` pass on the scaffold
-- [ ] 5 samples × (txt, png, expected json) committed
+- [x] `npm run build` and `npx tsc --noEmit` pass on the scaffold
+- [x] 5 samples × (txt, png, expected json) committed
 Do NOT implement: any UI beyond a placeholder page.
 
 ### Task 2: Analysis schema and deterministic extractors
@@ -56,7 +56,7 @@ Do NOT implement: any UI beyond a placeholder page.
 - `src/extract.ts`: deterministic parsers over the Japanese text: Japanese era and western dates (令和8年6月30日, 2026年6月30日, 6月30日(火) with year inferred from context, full-width digits), yen amounts (12,300円, ￥12,300, 金額 欄), instalment tables (第1期…第4期). Return spans. These validate and override LLM output: an LLM date or amount that does not appear in the text is dropped and the field marked low confidence.
 - `src/doc-types.ts`: keyword classifier for the 5 doc types plus `unknown`, with per-type guidance (where to pay, what office, official multilingual links) as static data with source URLs.
 - Tests for every parser with tricky cases (era boundary 平成31/令和元, full-width, ranges like 6月1日から6月30日まで).
-- [ ] extractor tests pass, including all 5 samples matching `samples/expected`
+- [x] extractor tests pass, including all 5 samples matching `samples/expected`
 Do NOT implement: LLM calls.
 
 ### Task 3: AI pipeline
@@ -67,15 +67,15 @@ Do NOT implement: LLM calls.
 - Fallback: when the AI binding is missing or fails, `/api/analyze` returns the deterministic result (extractor + doc-type guidance, English template text; for the 5 samples the `samples/expected` JSON) with `trace` marking `fallback`.
 - Input limits: 8 KB text, 5 MB image, simple per-IP rate limit in memory (20/min) with 429.
 - Tests with a fake AI binding: happy path, hallucinated date dropped, injection text ignored, fallback path, limits.
-- [ ] all API tests pass with the fake binding
-- [ ] `wrangler dev -c wrangler.offline.jsonc` serves the API and analyzing a sample works offline
+- [x] all API tests pass with the fake binding
+- [x] `wrangler dev -c wrangler.offline.jsonc` serves the API and analyzing a sample works offline
 Do NOT implement: storage of any letter.
 
 ### Task 4: Calendar export and privacy
 - `GET`-less client-side `.ics` generation for each action with a deadline (VEVENT all-day, reminder 3 days before, summary in target language + Japanese title, description with amount and how-to).
 - Privacy: no logging of letter text (check `console.log` usage), `Cache-Control: no-store` on API responses, a `/privacy` static page explaining processing.
-- [ ] tests for ics output (valid RFC 5545 line folding, escaping)
-- [ ] grep shows no logging of request bodies
+- [x] tests for ics output (valid RFC 5545 line folding, escaping)
+- [x] grep shows no logging of request bodies
 
 ### Task 5: Web UI
 - Single page: header (logo text "LetterLens", tagline "Understand letters from Japanese offices"), language picker (persists in localStorage), three inputs: take/upload photo (`<input type=file accept="image/*" capture="environment">`), paste text, or "Try a sample" (the 5 samples as cards).
@@ -83,16 +83,16 @@ Do NOT implement: storage of any letter.
 - Result view: doc type badge, summary card, action checklist (checkboxes, deadline countdown "in 12 days", amount, how, "Add to calendar"), each date/amount shows the original Japanese quote on tap and highlights it in the transcribed text panel; "check yourself" chips for low confidence; consequences; glossary with furigana; follow-up chat box; "AI trace" collapsible (steps, model, ms, dropped fields) to make the AI pipeline visible to judges; disclaimer + official help links.
 - Responsive 360 px → desktop two columns (letter text left, explanation right). Print style.
 - Headless Chromium smoke (Playwright, already installed globally on the machine; if not, skip with a message) that loads the offline dev server, runs a sample and asserts the checklist renders; screenshots saved to `docs/screenshots/01-…png` at 1280×800 and 390×844.
-- [ ] smoke script `scripts/smoke.mjs` passes against the offline server
-- [ ] screenshots committed
+- [x] smoke script `scripts/smoke.mjs` passes against the offline server
+- [x] screenshots committed
 
 ### Task 6: Docs and submission material
 - `README.md`: what/why, live URL placeholder `https://letterlens.<account>.workers.dev`, how to run offline, architecture diagram (mermaid), responsible-AI section (grounding, validation, no storage, limits), license and model licenses (Llama 3.2/3.3 community license attribution "Built with Llama").
 - `docs/submission/devpost.md`: Inspiration / What it does / How we built it / Challenges / Accomplishments / What we learned / What's next / Built with. English, honest, no invented personal stories (the author is a Japanese university student studying foreign languages and cultures who sees international classmates struggle with these letters — keep it at that level of generality).
 - `docs/submission/video-script.md`: 2–3 minute narrated walkthrough with on-screen captions, scene by scene, using the samples.
 - `scripts/record-demo.mjs`: Playwright headless recording 1280×720 of the walkthrough against a base URL argument, with a caption overlay per scene (same idea as a fixed bottom caption div), output `demo-out/raw.webm` + `marks.json`.
-- [ ] README and submission docs complete
-- [ ] record script runs against the offline server and produces a webm
+- [x] README and submission docs complete
+- [x] record script runs against the offline server and produces a webm
 
 ## Out of scope
 Accounts, storing letters, payments, native apps, any real personal data in the repo, committing API keys.
