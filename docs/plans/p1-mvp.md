@@ -83,8 +83,8 @@ Do NOT implement: storage of any letter.
 - Result view: doc type badge, summary card, action checklist (checkboxes, deadline countdown "in 12 days", amount, how, "Add to calendar"), each date/amount shows the original Japanese quote on tap and highlights it in the transcribed text panel; "check yourself" chips for low confidence; consequences; glossary with furigana; follow-up chat box; "AI trace" collapsible (steps, model, ms, dropped fields) to make the AI pipeline visible to judges; disclaimer + official help links.
 - Responsive 360 px → desktop two columns (letter text left, explanation right). Print style.
 - Headless Chromium smoke (Playwright, already installed globally on the machine; if not, skip with a message) that loads the offline dev server, runs a sample and asserts the checklist renders; screenshots saved to `docs/screenshots/01-…png` at 1280×800 and 390×844.
-- [ ] smoke script `scripts/smoke.mjs` passes against the offline server
-- [ ] screenshots committed
+- [x] smoke script `scripts/smoke.mjs` passes against the offline server
+- [x] screenshots committed
 
 ### Task 6: Docs and submission material
 - `README.md`: what/why, live URL placeholder `https://letterlens.<account>.workers.dev`, how to run offline, architecture diagram (mermaid), responsible-AI section (grounding, validation, no storage, limits), license and model licenses (Llama 3.2/3.3 community license attribution "Built with Llama").

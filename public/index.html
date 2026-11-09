@@ -3,13 +3,104 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LetterLens</title>
+  <meta name="description" content="LetterLens explains letters from Japanese city offices, the pension service and the tax office in your language.">
+  <meta name="color-scheme" content="light dark">
+  <title>LetterLens — Understand letters from Japanese offices</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1>LetterLens</h1>
-  <p>Understand letters from Japanese offices</p>
-  <p id="status" aria-live="polite"></p>
-  <footer><a href="/privacy">Privacy</a></footer>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="brand">
+      <h1><span aria-hidden="true">🔍</span> LetterLens</h1>
+      <p class="tagline" data-i18n="tagline">Understand letters from Japanese offices</p>
+    </div>
+    <label class="lang">
+      <span data-i18n="language">Explain in</span>
+      <select id="language"></select>
+    </label>
+  </header>
+
+  <main id="main">
+    <section id="input" class="card" aria-labelledby="input-h">
+      <h2 id="input-h" class="visually-hidden">Your letter</h2>
+      <label class="photo button">
+        <input id="photo" type="file" accept="image/*" capture="environment">
+        <span aria-hidden="true">📷</span> <span data-i18n="photo">Take or upload a photo</span>
+      </label>
+      <label for="text" class="paste-label" data-i18n="paste">Or paste the letter text</label>
+      <textarea id="text" rows="6" lang="ja" placeholder="令和8年度 特別区民税・都民税 納税通知書 …"></textarea>
+      <button id="analyze" class="button primary" type="button" data-i18n="analyze">Explain this letter</button>
+
+      <h3 data-i18n="samples">Try a sample letter</h3>
+      <p class="muted small" data-i18n="samplesNote">Synthetic letters with fictional names, amounts and dates.</p>
+      <ul id="samples" class="samples"></ul>
+    </section>
+
+    <section id="progress" class="card" hidden>
+      <ol id="steps" class="steps" aria-live="polite"></ol>
+    </section>
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <section id="result" hidden>
+      <div class="layout">
+        <aside class="card letter-panel" aria-labelledby="letter-h">
+          <h2 id="letter-h" data-i18n="letterText">Letter text</h2>
+          <pre id="letter" lang="ja" tabindex="0"></pre>
+        </aside>
+        <div class="explain">
+          <div id="offline" class="notice" hidden data-i18n="offline">Offline mode</div>
+          <article class="card" aria-labelledby="what-h">
+            <p><span id="badge" class="badge"></span></p>
+            <h2 id="what-h" data-i18n="whatIs">What this is</h2>
+            <p id="sender" class="muted"></p>
+            <p id="summary" class="summary"></p>
+            <ul id="warnings" class="warnings"></ul>
+          </article>
+          <article class="card" aria-labelledby="todo-h">
+            <h2 id="todo-h" data-i18n="todo">What you must do</h2>
+            <ul id="actions" class="actions"></ul>
+            <button id="cal-all" class="button" type="button" data-i18n="addAllCal">Add all deadlines to calendar</button>
+          </article>
+          <article class="card" aria-labelledby="ignore-h">
+            <h2 id="ignore-h" data-i18n="ifIgnore">What happens if you ignore it</h2>
+            <ul id="consequences"></ul>
+          </article>
+          <article class="card" aria-labelledby="terms-h">
+            <h2 id="terms-h" data-i18n="terms">Key terms</h2>
+            <dl id="glossary" class="glossary"></dl>
+          </article>
+          <article class="card no-print" aria-labelledby="ask-h">
+            <h2 id="ask-h" data-i18n="ask">Ask a follow-up</h2>
+            <div id="chat" class="chat" aria-live="polite"></div>
+            <form id="ask-form" class="ask">
+              <label for="question" class="visually-hidden" data-i18n="ask">Ask a follow-up</label>
+              <input id="question" type="text" maxlength="500" autocomplete="off">
+              <button class="button primary" type="submit" data-i18n="askSend">Ask</button>
+            </form>
+            <p id="ask-left" class="muted small"></p>
+          </article>
+          <details class="card trace no-print">
+            <summary data-i18n="trace">AI trace</summary>
+            <table>
+              <thead><tr><th data-i18n="step">Step</th><th data-i18n="model">Model</th><th>ms</th><th data-i18n="dropped">Dropped</th></tr></thead>
+              <tbody id="trace"></tbody>
+            </table>
+          </details>
+          <aside class="card disclaimer" aria-labelledby="help-h">
+            <p data-i18n="disclaimer">LetterLens is an AI helper, not legal or tax advice.</p>
+            <h2 id="help-h" data-i18n="help">Official help in your language</h2>
+            <ul id="help"></ul>
+          </aside>
+          <button id="again" class="button no-print" type="button" data-i18n="startOver">Explain another letter</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <a href="/privacy" data-i18n="privacy">Privacy</a> · Built with Llama · Workers AI
+  </footer>
   <script type="module" src="/app.js"></script>
 </body>
 </html>

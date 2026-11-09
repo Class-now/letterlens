@@ -6,9 +6,10 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/web/app.ts --bundle --format=esm --target=es2022 --outfile=public/app.js",
+    "build": "esbuild src/web/app.ts --bundle --format=esm --target=es2022 --loader:.txt=text --outfile=public/app.js",
     "dev": "wrangler dev -c wrangler.offline.jsonc --port 8799",
     "test": "vitest run",
+    "smoke": "node scripts/smoke.mjs",
     "typecheck": "tsc --noEmit",
     "render-samples": "node scripts/render-samples.mjs"
   },
