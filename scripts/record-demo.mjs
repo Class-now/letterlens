@@ -5,7 +5,7 @@
 //   baseUrl defaults to a local offline server started by this script (wrangler.offline.jsonc).
 //   outDir defaults to demo-out/. Output: <outDir>/raw.webm and <outDir>/marks.json.
 //   DEMO_PACE=1 halves the holds for a quick check.
-import { spawn } from "node:child_process";
+import { spawnDevServer, stopServer } from "./dev-server.mjs";
 import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -56,11 +56,7 @@ let server;
 if (!base) {
   base = `http://127.0.0.1:${PORT}`;
   await waitGone(`${base}/api/health`, 20_000);
-  server = spawn("npx", ["wrangler", "dev", "-c", "wrangler.offline.jsonc", "--port", String(PORT), "--ip", "127.0.0.1"], {
-    cwd: root,
-    stdio: ["ignore", "ignore", "inherit"],
-    detached: true,
-  });
+  server = spawnDevServer(root, PORT);
 }
 base = base.replace(/\/$/, "");
 
@@ -208,7 +204,7 @@ try {
   await browser?.close();
   if (server) {
     try {
-      process.kill(-server.pid, "SIGTERM");
+      stopServer(server);
       await waitGone(`${base}/api/health`, 20_000);
     } catch {
       // already gone

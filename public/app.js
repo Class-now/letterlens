@@ -176,6 +176,7 @@ var LANGUAGES = {
   id: "Indonesian",
   "ja-easy": "easy Japanese (\u3084\u3055\u3057\u3044\u65E5\u672C\u8A9E: short sentences, common words, hiragana readings for kanji words)"
 };
+var MAX_TEXT_BYTES = 8 * 1024;
 
 // src/web/format.ts
 function uiLangOf(outputLanguage) {

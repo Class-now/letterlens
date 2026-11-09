@@ -207,6 +207,22 @@ describe("/api/read", () => {
     expect(content[1].image_url!.url.startsWith("data:image/png;base64,")).toBe(true);
   });
 
+  it("cuts a long transcription to what /api/analyze accepts", async () => {
+    const { ai } = fakeAi({ read: "税".repeat(3000) + "🙂" });
+    const png = readFileSync(join(samples, "b-health-insurance.png"));
+    const form = new FormData();
+    form.append("image", new Blob([png], { type: "image/png" }), "letter.png");
+    const res = await handleApi(new Request("https://x/api/read", { method: "POST", body: form, headers: { "cf-connecting-ip": "10.1.0.9" } }), ai);
+    const text = ((await res.json()) as any).text as string;
+    expect(new TextEncoder().encode(text).length).toBeLessThanOrEqual(8 * 1024);
+    expect(text.length).toBe(2730);
+    const analyzed = await handleApi(
+      new Request("https://x/api/analyze", { method: "POST", body: JSON.stringify({ text, language: "en" }), headers: { "content-type": "application/json", "cf-connecting-ip": "10.1.0.9" } }),
+      undefined,
+    );
+    expect(analyzed.status).not.toBe(413);
+  });
+
   it("rejects images over 5 MB and non-images, and says OCR is unavailable offline", async () => {
     const big = new FormData();
     big.append("image", new Blob([new Uint8Array(5 * 1024 * 1024 + 1)], { type: "image/png" }), "big.png");

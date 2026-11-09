@@ -102,11 +102,14 @@ export function parseDates(text: string, opts: ExtractOptions = {}): { dates: Da
       if (year === undefined) {
         const fy = fys.filter((f) => f.at < start).at(-1);
         const ctx = dates.filter((d) => d.yearFrom === "explicit").at(-1);
+        // An explicit date written after the 年度 heading (e.g. the issue date of a late notice for
+        // last year's tax) is the better anchor; the heading only wins when it is the nearer one.
+        const ctxIsNearer = ctx !== undefined && (!fy || ctx.source.start > fy.at);
         if (linked) {
           const [y, pm] = linked.date.split("-").map(Number);
           year = month < pm ? y + 1 : y;
           yearFrom = "range";
-        } else if (fy) {
+        } else if (fy && !ctxIsNearer) {
           year = month >= 4 ? fy.year : fy.year + 1;
           yearFrom = "fiscal_year";
         } else if (ctx) {
@@ -115,7 +118,17 @@ export function parseDates(text: string, opts: ExtractOptions = {}): { dates: Da
           if (candidate && dayDiff(candidate, ctx.date) < -90) year += 1;
           yearFrom = "context";
         } else {
-          year = (opts.today ?? new Date()).getFullYear();
+          const today = opts.today ?? new Date();
+          year = today.getFullYear();
+          // Pick the year that puts the date nearest to today: a letter read in December about
+          // "1月5日" means next January, while "6月30日" read in November is this year's.
+          const todayIso = iso(year, today.getMonth() + 1, today.getDate());
+          const gap = (y: number) => {
+            const c = iso(y, month, day);
+            return c && todayIso ? Math.abs(dayDiff(c, todayIso)) : Infinity;
+          };
+          if (gap(year + 1) < gap(year)) year += 1;
+          else if (gap(year - 1) < gap(year)) year -= 1;
           yearFrom = "today";
         }
       }
@@ -233,7 +246,14 @@ export function validateAction(action: Action, facts: Facts): { action: Action; 
 
   if (action.amountYen) {
     const hits = facts.amounts.filter((a) => a.value === action.amountYen!.value);
-    const hit = hits.find((a) => overlapsQuote(a.source, action.amountYen!.source)) ?? hits[0];
+    // The same amount often appears on several instalment rows and the LLM's quote ("24,500円")
+    // only locates the first one. When the deadline was found, take the copy nearest to it.
+    const anchor = out.deadline?.source.start;
+    const nearest =
+      hits.length > 1 && anchor !== undefined
+        ? [...hits].sort((a, b) => Math.abs(a.source.start - anchor) - Math.abs(b.source.start - anchor))[0]
+        : undefined;
+    const hit = nearest ?? hits.find((a) => overlapsQuote(a.source, action.amountYen!.source)) ?? hits[0];
     if (!hit) {
       delete out.amountYen;
       dropped.push(`amount ${action.amountYen.value} yen is not in the letter`);

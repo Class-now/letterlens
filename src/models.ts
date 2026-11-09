@@ -19,3 +19,6 @@ export const LANGUAGES: Record<string, string> = {
 export function languageOf(code: unknown): string {
   return typeof code === "string" && code in LANGUAGES ? code : "en";
 }
+
+/** Upper bound for letter text (UTF-8 bytes) accepted by /api/analyze and returned by /api/read. */
+export const MAX_TEXT_BYTES = 8 * 1024;

@@ -5,7 +5,7 @@
 import { classify, GUIDANCE } from "./doc-types";
 import { extractFacts, validateAction } from "./extract";
 import { fallbackAnalysis } from "./fallback";
-import { LANGUAGES, TEXT_MODEL, VISION_MODEL } from "./models";
+import { LANGUAGES, MAX_TEXT_BYTES, TEXT_MODEL, VISION_MODEL } from "./models";
 import { clean, cleanList } from "./sanitize";
 import type { Action, Analysis, DocType, Item, Quote, Term } from "./types";
 
@@ -95,7 +95,22 @@ export async function transcribe(ai: AiRunner, image: Uint8Array, mime: string):
     }),
   );
   const r = responseOf(out);
-  return { text: typeof r === "string" ? r.trim().slice(0, 8000) : "", trace: { fallback: false, steps } };
+  return { text: typeof r === "string" ? truncateUtf8(r.trim(), MAX_TEXT_BYTES) : "", trace: { fallback: false, steps } };
+}
+
+/** Cut to at most `max` UTF-8 bytes without splitting a character, so /api/analyze accepts it. */
+export function truncateUtf8(s: string, max: number): string {
+  const enc = new TextEncoder();
+  if (enc.encode(s).length <= max) return s;
+  let bytes = 0;
+  let out = "";
+  for (const ch of s) {
+    const n = enc.encode(ch).length;
+    if (bytes + n > max) break;
+    bytes += n;
+    out += ch;
+  }
+  return out;
 }
 
 function toBase64(bytes: Uint8Array): string {

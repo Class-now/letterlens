@@ -1,10 +1,10 @@
 // JSON API under /api/*: input limits, per-IP rate limit, and the three pipeline endpoints.
 // Letter text and images are processed in memory only; nothing is stored or logged.
-import { languageOf } from "./models";
+import { languageOf, MAX_TEXT_BYTES } from "./models";
 import { analyze, ask, transcribe, type AiRunner } from "./pipeline";
 import { clean } from "./sanitize";
 
-export const MAX_TEXT_BYTES = 8 * 1024;
+export { MAX_TEXT_BYTES };
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const RATE_LIMIT = 20;
 const WINDOW_MS = 60_000;

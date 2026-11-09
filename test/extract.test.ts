@@ -85,6 +85,22 @@ describe("parseDates", () => {
     expect(dates("6月30日まで")[0]).toMatchObject({ date: "2026-06-30", yearFrom: "today" });
   });
 
+  it("rolls a today-based month-day into next year when that is nearer (December letter, January deadline)", () => {
+    const dec = new Date("2026-12-15T00:00:00Z");
+    expect(parseDates("国民健康保険料 納入通知書\n納期限 1月5日", { today: dec }).dates[0]).toMatchObject({
+      date: "2027-01-05",
+      yearFrom: "today",
+    });
+  });
+
+  it("prefers an explicit date written after the 年度 heading over the fiscal year", () => {
+    const ds = dates("令和7年度 国民健康保険料 督促状\n発行日 令和8年5月1日\n指定期限 5月20日");
+    expect(ds[1]).toMatchObject({ date: "2026-05-20", yearFrom: "context" });
+    // The fiscal year still decides when it is the nearer anchor.
+    const fy = dates("発行日 令和8年4月1日\n令和8年度 住民税\n第4期 1月31日");
+    expect(fy[1]).toMatchObject({ date: "2027-01-31", yearFrom: "fiscal_year" });
+  });
+
   it("reads ranges like 6月1日から6月30日まで", () => {
     const t = "受付期間　令和8年6月1日から6月30日まで";
     const { dates: ds, ranges } = parseDates(t, { today });
@@ -182,6 +198,25 @@ describe("validateAction", () => {
     expect(action.amountYen).toBeUndefined();
     expect(action.confidence).toBe("low");
     expect(dropped).toHaveLength(2);
+  });
+
+  it("ties a repeated amount to the instalment row of its own deadline", () => {
+    const rows = "令和8年度\n第2期　令和8年8月31日　24,500円\n第3期　令和8年10月31日　24,500円\n第4期　令和9年1月31日　24,500円";
+    const f = extractFacts(rows, { today });
+    const first = rows.indexOf("24,500円");
+    for (const [date, line] of [
+      ["2026-10-31", "第3期"],
+      ["2027-01-31", "第4期"],
+    ] as const) {
+      const { action } = validateAction(
+        { ...base, deadline: { date, source: q("x") }, amountYen: { value: 24500, source: { text: "24,500円", start: first, end: first + 7 } } },
+        f,
+      );
+      const lineStart = rows.indexOf(line);
+      const lineEnd = rows.indexOf("\n", lineStart) === -1 ? rows.length : rows.indexOf("\n", lineStart);
+      expect(action.amountYen!.source.start, line).toBeGreaterThan(lineStart);
+      expect(action.amountYen!.source.end, line).toBeLessThanOrEqual(lineEnd);
+    }
   });
 
   it("caps confidence when the year was guessed", () => {

@@ -2,7 +2,7 @@
 // Starts `wrangler dev -c wrangler.offline.jsonc` itself unless a base URL is given, runs a sample letter,
 // asserts the checklist renders, and saves screenshots to docs/screenshots/.
 // Run: node scripts/smoke.mjs [baseUrl]
-import { spawn } from "node:child_process";
+import { spawnDevServer, stopServer } from "./dev-server.mjs";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,11 +37,7 @@ let server;
 let base = process.argv[2];
 if (!base) {
   base = `http://127.0.0.1:${PORT}`;
-  server = spawn("npx", ["wrangler", "dev", "-c", "wrangler.offline.jsonc", "--port", String(PORT), "--ip", "127.0.0.1"], {
-    cwd: root,
-    stdio: ["ignore", "ignore", "inherit"],
-    detached: true,
-  });
+  server = spawnDevServer(root, PORT);
 }
 
 const failures = [];
@@ -121,7 +117,7 @@ try {
   await browser?.close();
   if (server) {
     try {
-      process.kill(-server.pid, "SIGTERM");
+      stopServer(server);
     } catch {
       // already gone
     }
