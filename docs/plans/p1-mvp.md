@@ -67,8 +67,8 @@ Do NOT implement: LLM calls.
 - Fallback: when the AI binding is missing or fails, `/api/analyze` returns the deterministic result (extractor + doc-type guidance, English template text; for the 5 samples the `samples/expected` JSON) with `trace` marking `fallback`.
 - Input limits: 8 KB text, 5 MB image, simple per-IP rate limit in memory (20/min) with 429.
 - Tests with a fake AI binding: happy path, hallucinated date dropped, injection text ignored, fallback path, limits.
-- [ ] all API tests pass with the fake binding
-- [ ] `wrangler dev -c wrangler.offline.jsonc` serves the API and analyzing a sample works offline
+- [x] all API tests pass with the fake binding
+- [x] `wrangler dev -c wrangler.offline.jsonc` serves the API and analyzing a sample works offline
 Do NOT implement: storage of any letter.
 
 ### Task 4: Calendar export and privacy
