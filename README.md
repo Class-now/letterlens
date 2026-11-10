@@ -2,7 +2,7 @@
 
 **Understand letters from Japanese offices.** Photograph or paste a letter from a city office, the pension service or the tax office, and LetterLens explains it in your language: what it is, what you must do and by when, how much to pay, what happens if you ignore it, and the key Japanese terms to use at the counter.
 
-Live: https://letterlens.shotaro-takakura.workers.dev
+Live: https://letterlens.shotaro-takakura.workers.dev · Demo video: https://youtu.be/Ngpx8hihXoU
 Built for SLAY HACKS 2026.
 
 ![Result view on desktop](docs/screenshots/02-result-desktop.png)
