@@ -4,14 +4,17 @@
 export const VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
 export const VISION_FALLBACK_MODEL = "@cf/mistralai/mistral-small-3.1-24b-instruct";
 export const TEXT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+// Llama 3.3 sometimes answers in English when asked for Nepali or mixes kanji into Korean. A rejected
+// answer is rewritten by Mistral Small 3.1, whose model card lists Nepali, Korean, Vietnamese and Chinese.
+export const WRITER_FALLBACK_MODEL = "@cf/mistralai/mistral-small-3.1-24b-instruct";
 
 /** Output languages: code → name used in prompts. */
 export const LANGUAGES: Record<string, string> = {
   en: "English",
-  zh: "Simplified Chinese",
-  vi: "Vietnamese",
-  ne: "Nepali",
-  ko: "Korean",
+  zh: "Simplified Chinese (简体中文)",
+  vi: "Vietnamese (Tiếng Việt)",
+  ne: "Nepali (नेपाली, in Devanagari script)",
+  ko: "Korean (한국어)",
   pt: "Portuguese",
   es: "Spanish",
   tl: "Filipino (Tagalog)",

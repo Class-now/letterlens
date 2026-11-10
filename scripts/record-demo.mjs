@@ -87,6 +87,16 @@ async function scene(id, caption) {
 const PACE = Number(process.env.DEMO_PACE ?? 2);
 const pause = (ms) => page.waitForTimeout(ms * PACE);
 
+// Waiting for the live model takes 10–40 s. The start and end of each wait go to marks.json so
+// scripts/edit-demo.mjs can speed those stretches up.
+const waits = [];
+const now = () => Number(((Date.now() - t0) / 1000).toFixed(2));
+async function waitResult() {
+  const from = now();
+  await page.waitForSelector("#result:not([hidden]) .action", { timeout: 120_000 });
+  waits.push([from, now()]);
+}
+
 /** Smoothly scrolls an element to the top of the viewport. */
 async function show(selector, block = "start") {
   await page.locator(selector).first().evaluate((el, b) => el.scrollIntoView({ behavior: "smooth", block: b }), block);
@@ -123,7 +133,7 @@ try {
 
   await scene("03-analyze", "Resident tax bill → read, classify, extract, check facts, explain — in 10 languages.");
   await page.locator('[data-sample="a-resident-tax"]').click();
-  await page.waitForSelector("#result:not([hidden]) .action", { timeout: 20_000 });
+  await waitResult();
   await pause(1500);
   await show("#result");
   await pause(2500);
@@ -132,7 +142,7 @@ try {
   await show("#what-h");
   await pause(3500);
 
-  await scene("05-checklist", "What you must do: 4 instalments, each with a deadline, amount and where to pay.");
+  await scene("05-checklist", "What you must do: every instalment with its deadline, amount and where to pay.");
   await show("#todo-h");
   await pause(4000);
 
@@ -171,10 +181,25 @@ try {
   await page.waitForSelector("#input:not([hidden]) .sample");
   await show("#samples", "center");
   await page.locator('[data-sample="e-tax-reminder"]').click();
-  await page.waitForSelector("#result:not([hidden]) .action", { timeout: 20_000 });
+  await waitResult();
   await pause(1200);
   await show("#ignore-h");
   await pause(4000);
+
+  // A photo goes through the vision model first; shown in Vietnamese to demonstrate another language.
+  await scene("11b-photo", "A photo of a health insurance notice, explained in Vietnamese. The vision model reads the Japanese first.");
+  await page.click("#again");
+  await page.waitForSelector("#input:not([hidden]) .sample");
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  await page.selectOption("#language", "vi");
+  await pause(1500);
+  await page.setInputFiles("#photo", join(root, "samples", "b-health-insurance.png"));
+  await waitResult();
+  await pause(1000);
+  await show("#result");
+  await pause(3000);
+  await show("#todo-h");
+  await pause(3500);
 
   await scene("12-trust", "Not legal advice. Official help links. Nothing stored — letters are processed and discarded.");
   await show(".disclaimer", "center");
@@ -193,7 +218,7 @@ try {
   rmSync(tmpVideos, { recursive: true, force: true });
   writeFileSync(
     join(outDir, "marks.json"),
-    JSON.stringify({ base, size: SIZE, durationSec: Number(((Date.now() - t0) / 1000).toFixed(2)), scenes: marks }, null, 2) + "\n",
+    JSON.stringify({ base, size: SIZE, durationSec: Number(((Date.now() - t0) / 1000).toFixed(2)), waits, scenes: marks }, null, 2) + "\n",
   );
   console.log(`\nrecorded ${raw} (${marks.length} scenes) and marks.json`);
 } catch (err) {

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { handleApi, RateLimiter } from "../src/api";
-import { TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL } from "../src/models";
+import { TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL, WRITER_FALLBACK_MODEL } from "../src/models";
 import type { AiRunner } from "../src/pipeline";
 import { clean } from "../src/sanitize";
 import worker from "../src/worker";
@@ -76,12 +76,12 @@ const goodWrite = {
 describe("/api/analyze with the AI", () => {
   it("happy path: validated actions with quotes, trace of every step", async () => {
     const { ai, calls } = fakeAi({ extract: goodExtract, write: goodWrite });
-    const res = await handleApi(post("/api/analyze", { text: residentTax, language: "vi" }), ai);
+    const res = await handleApi(post("/api/analyze", { text: residentTax, language: "pt" }), ai);
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
     const body: any = await res.json();
     expect(body.docType).toBe("resident_tax");
-    expect(body.language).toBe("vi");
+    expect(body.language).toBe("pt");
     expect(body.actions).toHaveLength(2);
     expect(body.actions[0]).toMatchObject({ title: "Pay instalment 1", confidence: "high", deadline: { date: "2026-06-30" }, amountYen: { value: 24900 } });
     const q = body.actions[0].deadline.source;
@@ -102,6 +102,26 @@ describe("/api/analyze with the AI", () => {
       "consequence without a quote from the letter: You will be deported.",
       'glossary term "存在しない用語" is not in the letter',
     ]);
+  });
+
+  it("asks the writer again when the answer is not in the requested language", async () => {
+    const { ai, calls } = fakeAi({ extract: goodExtract, write: goodWrite });
+    const res = await handleApi(post("/api/analyze", { text: residentTax, language: "ne" }), ai);
+    const body: any = await res.json();
+    expect(body.trace.fallback).toBe(false);
+    const writes = calls.filter((c) => String((c.input.messages as { content: string }[])[0].content).startsWith("You explain"));
+    expect(writes).toHaveLength(2);
+    expect(String((writes[1].input.messages as { content: string }[])[0].content)).toContain("A previous answer was rejected: the summary is not written in Nepali");
+    expect(writes.map((c) => c.model)).toEqual([TEXT_MODEL, WRITER_FALLBACK_MODEL]);
+    expect(body.trace.steps[3].dropped[0]).toContain("first answer rejected (the summary is not written in Nepali");
+  });
+
+  it("removes a summary sentence that names a year the letter does not have", async () => {
+    const write = { ...goodWrite, summary: "This is your resident tax bill for 2024. Pay each instalment by its deadline." };
+    const { ai } = fakeAi({ extract: goodExtract, write });
+    const body: any = await (await handleApi(post("/api/analyze", { text: residentTax, language: "en" }), ai)).json();
+    expect(body.summary).toBe("Pay each instalment by its deadline.");
+    expect(body.trace.steps[3].dropped).toContain("summary mentioned 2024, which is not a year in the letter: sentence removed");
   });
 
   it("drops a hallucinated date and amount and marks the action low confidence", async () => {

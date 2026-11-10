@@ -166,10 +166,10 @@ function icsFilename(action) {
 // src/models.ts
 var LANGUAGES = {
   en: "English",
-  zh: "Simplified Chinese",
-  vi: "Vietnamese",
-  ne: "Nepali",
-  ko: "Korean",
+  zh: "Simplified Chinese (\u7B80\u4F53\u4E2D\u6587)",
+  vi: "Vietnamese (Ti\u1EBFng Vi\u1EC7t)",
+  ne: "Nepali (\u0928\u0947\u092A\u093E\u0932\u0940, in Devanagari script)",
+  ko: "Korean (\uD55C\uAD6D\uC5B4)",
   pt: "Portuguese",
   es: "Spanish",
   tl: "Filipino (Tagalog)",
@@ -441,11 +441,13 @@ async function run(input) {
   const timers = [];
   try {
     let text = input.text ?? "";
+    let readSteps = [];
     if (input.image) {
       const form = new FormData();
       form.append("image", input.image);
       const read = await post("/api/read", form, false);
       text = String(read.text ?? "");
+      readSteps = read.trace?.steps ?? [];
       $("text").value = text;
       active = 1;
       showSteps(ids, active);
@@ -455,6 +457,7 @@ async function run(input) {
     timers.push(window.setTimeout(() => showSteps(ids, base + 1), 900));
     timers.push(window.setTimeout(() => showSteps(ids, base + 2), 2200));
     const result = await post("/api/analyze", JSON.stringify({ text, language: state.language }));
+    if (readSteps.length && result.trace) result.trace.steps = [...readSteps, ...result.trace.steps];
     timers.forEach(clearTimeout);
     showSteps(ids, ids.length);
     $("steps").appendChild(el("li", { class: "done" }, tr("done")));

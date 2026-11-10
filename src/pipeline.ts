@@ -6,8 +6,8 @@ import { classify, GUIDANCE } from "./doc-types";
 import { extractFacts, validateAction } from "./extract";
 import { fallbackAnalysis } from "./fallback";
 import { readingOf } from "./readings";
-import { LANGUAGES, MAX_TEXT_BYTES, TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL } from "./models";
-import { clean, cleanList } from "./sanitize";
+import { LANGUAGES, MAX_TEXT_BYTES, TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL, WRITER_FALLBACK_MODEL } from "./models";
+import { clean, cleanList, dropUnsupportedYears, yearsInLetter } from "./sanitize";
 import type { Action, Analysis, DocType, Item, Quote, Term } from "./types";
 
 /** The part of the Workers AI binding we use (also implemented by the test fake). */
@@ -55,16 +55,67 @@ async function timed<T>(steps: TraceStep[], step: TraceStep, fn: () => Promise<T
   }
 }
 
-async function chatJson(ai: AiRunner, system: string, user: string, maxTokens: number): Promise<Record<string, unknown>> {
-  const out = await ai.run(TEXT_MODEL, {
-    messages: [
-      { role: "system", content: system },
-      { role: "user", content: user },
-    ],
-    temperature: 0.2,
-    max_tokens: maxTokens,
-  });
-  return parseJson(out);
+/**
+ * One JSON answer from the text model. JSON mode keeps the reply parseable. A broken reply (seen
+ * with long Vietnamese output) or one that `accept` rejects (wrong language, cut short) gets one
+ * more try; the second parseable reply is used as it is.
+ */
+async function chatJson(
+  ai: AiRunner,
+  system: string,
+  user: string,
+  maxTokens: number,
+  accept?: (reply: Record<string, unknown>) => string | undefined,
+  /** Called when the first reply was rejected and the second writer model takes over. */
+  onRetry?: (problem: string, model: string) => void,
+): Promise<Record<string, unknown>> {
+  let lastError: unknown;
+  let rejected: Record<string, unknown> | undefined;
+  let problem: string | undefined;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    // A rejected reply (usually the wrong language) goes to the model with wider language coverage.
+    const model = problem ? WRITER_FALLBACK_MODEL : TEXT_MODEL;
+    if (problem) onRetry?.(problem, model);
+    try {
+      const out = await ai.run(model, {
+        messages: [
+          { role: "system", content: problem ? `${system}\nA previous answer was rejected: ${problem}. Avoid that.` : system },
+          { role: "user", content: user },
+        ],
+        temperature: attempt === 0 ? 0.2 : 0,
+        max_tokens: maxTokens,
+        ...(model === TEXT_MODEL ? { response_format: { type: "json_object" } } : {}),
+      });
+      const reply = parseJson(out);
+      problem = accept?.(reply);
+      if (!problem) return reply;
+      rejected = reply;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  if (rejected) return rejected;
+  throw lastError;
+}
+
+/** Letters that show a text is really in the requested language (languages in Latin script without marks are not checked). */
+const SCRIPT_OF: Record<string, RegExp> = {
+  ne: /[ऀ-ॿ]/,
+  zh: /[一-鿿]/,
+  ko: /[가-힯]/,
+  vi: /[ăâđêôơưạ-ỹ]/i,
+  "ja-easy": /[ぁ-ん]/,
+};
+
+/** Why a writer reply is not usable, or undefined when it is. Text in [brackets] is the quoted Japanese name. */
+export function writerProblem(reply: Record<string, unknown>, language: string): string | undefined {
+  const summary = typeof reply.summary === "string" ? reply.summary.trim() : "";
+  if (!summary) return "the summary is missing";
+  const script = SCRIPT_OF[language];
+  if (script && !script.test(summary.replace(/\[[^\]]*\]/g, ""))) return `the summary is not written in ${LANGUAGES[language]}`;
+  if (/[,;:、，；：]$/.test(summary)) return "the summary is cut off in the middle of a sentence";
+  if (!Array.isArray(reply.glossary) || reply.glossary.length === 0) return "the glossary is missing";
+  return undefined;
 }
 
 // --- transcription -------------------------------------------------------------------------
@@ -224,6 +275,8 @@ async function analyzeWithAi(ai: AiRunner, text: string, language: string, ruleT
   steps.push({ step: "validate", ms: Date.now() - vt, note: `${actions.length} actions kept`, dropped });
 
   const name = LANGUAGES[language];
+  const years = yearsInLetter(text);
+  for (const a of actions) if (a.deadline) years.add(Number(a.deadline.date.slice(0, 4)));
   const facts4writer = {
     doc_type: g.label.en,
     office: g.office,
@@ -231,20 +284,31 @@ async function analyzeWithAi(ai: AiRunner, text: string, language: string, ruleT
     sender_ja: sender || null,
     actions: actions.map((a, i) => ({ i, title: a.title, deadline: a.deadline?.date ?? null, amount_yen: a.amountYen?.value ?? null })),
     consequences: consequenceQuotes.map((q, i) => ({ i, quote: q.text })),
+    years_in_letter: [...years].sort(),
   };
   const writeDropped: string[] = [];
+  /** Free text from the writer: sentences naming a year the letter does not support are removed. */
+  const checkedYears = (value: unknown, max: number, what: string): string => {
+    const r = dropUnsupportedYears(clean(value, max), years);
+    if (r.removed.length) writeDropped.push(`${what} mentioned ${r.removed.join(", ")}, which is not a year in the letter: sentence removed`);
+    return r.text;
+  };
   const w = await timed(steps, { step: "write", model: TEXT_MODEL, ms: 0, note: name, dropped: writeDropped }, () =>
     chatJson(
       ai,
       `You explain a Japanese official letter to a foreign resident in ${name}. ${DATA_RULE} ` +
         "Use only the verified FACTS given by the system and the guidance; do not add dates, amounts or consequences that are not in FACTS. " +
+        "If you mention a year, use only a year from years_in_letter. " +
+        (language === "en" ? "" : `Write the summary, every title, every how step, every consequence text and every meaning in ${name}, not in English. `) +
         'Answer only JSON: {"summary": 1-2 sentences (who sent it and why), "sender": sender in the target language with the Japanese name in brackets, ' +
         '"actions": [{"i": index from FACTS, "title": short, "how": [1-3 short steps where/how]}], ' +
         '"consequences": [{"i": index from FACTS, "text": plain explanation}], ' +
         '"glossary": [{"term": Japanese term exactly as written in the letter, "reading": hiragana, "meaning": short meaning}] (3-8 terms)}.\n' +
         `FACTS: ${JSON.stringify(facts4writer)}`,
       asLetter(text),
-      2000,
+      3000, // ten instalments in Vietnamese or Nepali need more than 2000 tokens
+      (reply) => writerProblem(reply, language),
+      (problem, model) => writeDropped.push(`first answer rejected (${problem}): rewritten by ${model}`),
     ),
   );
 
@@ -262,7 +326,7 @@ async function analyzeWithAi(ai: AiRunner, text: string, language: string, ruleT
   for (const x of Array.isArray(w.consequences) ? w.consequences : []) {
     const i = (x as { i?: unknown })?.i;
     const source = typeof i === "number" ? consequenceQuotes[i] : undefined;
-    const t = clean((x as { text?: unknown })?.text, 300);
+    const t = checkedYears((x as { text?: unknown })?.text, 300, "consequence");
     if (source && t) consequences.push({ text: t, source });
     else if (t) writeDropped.push(`consequence without a quote from the letter: ${t.slice(0, 80)}`);
   }
@@ -284,7 +348,7 @@ async function analyzeWithAi(ai: AiRunner, text: string, language: string, ruleT
   return {
     docType,
     sender: clean(w.sender, 160) || sender || g.office,
-    summary: clean(w.summary, 600) || g.label.en,
+    summary: checkedYears(w.summary, 600, "summary") || g.label.en,
     actions: finalActions,
     consequences,
     glossary,

@@ -165,11 +165,13 @@ async function run(input: { text?: string; image?: File }): Promise<void> {
   const timers: number[] = [];
   try {
     let text = input.text ?? "";
+    let readSteps: Trace["steps"] = [];
     if (input.image) {
       const form = new FormData();
       form.append("image", input.image);
       const read = await post("/api/read", form, false);
       text = String(read.text ?? "");
+      readSteps = (read.trace as Trace | undefined)?.steps ?? [];
       $<HTMLTextAreaElement>("text").value = text;
       active = 1;
       showSteps(ids, active);
@@ -180,6 +182,8 @@ async function run(input: { text?: string; image?: File }): Promise<void> {
     timers.push(window.setTimeout(() => showSteps(ids, base + 1), 900));
     timers.push(window.setTimeout(() => showSteps(ids, base + 2), 2200));
     const result = (await post("/api/analyze", JSON.stringify({ text, language: state.language }))) as unknown as Result;
+    // The AI trace also lists the vision model that read the photo.
+    if (readSteps.length && result.trace) result.trace.steps = [...readSteps, ...result.trace.steps];
     timers.forEach(clearTimeout);
     showSteps(ids, ids.length);
     $("steps").appendChild(el("li", { class: "done" }, tr("done")));
