@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { handleApi, RateLimiter } from "../src/api";
-import { TEXT_MODEL, VISION_MODEL } from "../src/models";
+import { TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL } from "../src/models";
 import type { AiRunner } from "../src/pipeline";
 import { clean } from "../src/sanitize";
 import worker from "../src/worker";
@@ -12,7 +12,7 @@ const letter = (name: string) => readFileSync(join(samples, `${name}.txt`), "utf
 const expected = (name: string) => JSON.parse(readFileSync(join(samples, "expected", `${name}.json`), "utf8"));
 
 type Call = { model: string; input: Record<string, unknown> };
-type Replies = { classify?: unknown; extract?: unknown; write?: unknown; ask?: string; read?: string };
+type Replies = { classify?: unknown; extract?: unknown; write?: unknown; ask?: string; read?: string; readError?: boolean; readFallback?: string };
 
 /** Fake Workers AI: answers by which step's system prompt it sees, and records every call. */
 function fakeAi(replies: Replies) {
@@ -20,7 +20,11 @@ function fakeAi(replies: Replies) {
   const ai: AiRunner = {
     async run(model, input) {
       calls.push({ model, input });
-      if (model === VISION_MODEL) return { response: input.prompt === "agree" ? "Thank you for agreeing" : (replies.read ?? "") };
+      if (model === VISION_MODEL) {
+        if (replies.readError) throw new Error("upstream error");
+        return { choices: [{ message: { content: replies.read ?? "" } }] };
+      }
+      if (model === VISION_FALLBACK_MODEL) return { choices: [{ message: { content: replies.readFallback ?? "" } }] };
       const system = String((input.messages as { content: string }[])[0].content);
       const pick = (r: unknown) => {
         if (r instanceof Error) throw r;
@@ -192,19 +196,30 @@ describe("/api/read", () => {
     expect(((await res.json()) as any).text).toBe(residentTax);
   });
 
-  it("transcribes an image with the vision model (license agreed once)", async () => {
+  it("transcribes an image with the vision model", async () => {
     const { ai, calls } = fakeAi({ read: "国民健康保険料 納入通知書" });
     const png = readFileSync(join(samples, "b-health-insurance.png"));
-    for (let i = 0; i < 2; i++) {
-      const form = new FormData();
-      form.append("image", new Blob([png], { type: "image/png" }), "letter.png");
-      const res = await handleApi(new Request("https://letterlens.test/api/read", { method: "POST", body: form, headers: { "cf-connecting-ip": "10.1.0.1" } }), ai);
-      expect(res.status).toBe(200);
-      expect(((await res.json()) as any).text).toBe("国民健康保険料 納入通知書");
-    }
-    expect(calls.filter((c) => c.input.prompt === "agree")).toHaveLength(1);
-    const content = (calls[1].input.messages as { content: { type: string; image_url?: { url: string } }[] }[])[0].content;
+    const form = new FormData();
+    form.append("image", new Blob([png], { type: "image/png" }), "letter.png");
+    const res = await handleApi(new Request("https://letterlens.test/api/read", { method: "POST", body: form, headers: { "cf-connecting-ip": "10.1.0.1" } }), ai);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as any).text).toBe("国民健康保険料 納入通知書");
+    expect(calls.map((c) => c.model)).toEqual([VISION_MODEL]);
+    const content = (calls[0].input.messages as { content: { type: string; image_url?: { url: string } }[] }[])[0].content;
     expect(content[1].image_url!.url.startsWith("data:image/png;base64,")).toBe(true);
+  });
+
+  it("reads with the second vision model when the first one fails", async () => {
+    const { ai, calls } = fakeAi({ readError: true, readFallback: "督促状" });
+    const png = readFileSync(join(samples, "e-tax-reminder.png"));
+    const form = new FormData();
+    form.append("image", new Blob([png], { type: "image/png" }), "letter.png");
+    const res = await handleApi(new Request("https://letterlens.test/api/read", { method: "POST", body: form, headers: { "cf-connecting-ip": "10.1.0.2" } }), ai);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.text).toBe("督促状");
+    expect(calls.map((c) => c.model)).toEqual([VISION_MODEL, VISION_FALLBACK_MODEL]);
+    expect(body.trace.steps.map((s: any) => s.model)).toEqual([VISION_MODEL, VISION_FALLBACK_MODEL]);
   });
 
   it("cuts a long transcription to what /api/analyze accepts", async () => {

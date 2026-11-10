@@ -24,7 +24,7 @@ Every date and amount links to the exact Japanese words it came from. Tap it and
 ## How we built it
 
 - **Cloudflare Workers** (TypeScript) serves a vanilla-TS single page and three JSON APIs: `/api/read`, `/api/analyze` and `/api/ask`. There is no database at all.
-- **Workers AI**: Llama 3.2 11B Vision transcribes photos into Japanese text. Llama 3.3 70B does structured extraction (JSON, temperature 0.2), writes the explanation in the target language and answers follow-ups.
+- **Workers AI**: Llama 4 Scout transcribes photos into Japanese text (we measured three vision models on our sample letters and picked the one with 97–100% character accuracy; Mistral Small 3.1 takes over if it fails). Llama 3.3 70B does structured extraction (JSON, temperature 0.2), writes the explanation in the target language and answers follow-ups.
 - **Pipeline:** keyword rules classify the letter, with an LLM used only when the rules are unsure. The LLM extracts structured facts. A **deterministic validator** checks every date and amount against the letter text. The LLM then writes the explanation from the validated facts plus static, sourced guidance for each letter type.
 - **Deterministic extractors** parse Japanese era dates (令和8年 = 2026, including the 平成31年/令和元年 boundary), full-width digits, dates without a year, date ranges, yen amounts and instalment tables, and return the character span of each match.
 - **Safety and privacy:** the letter is treated as untrusted data (prompt-injection hardening), output is length-clipped, and URLs are stripped unless they point to official `go.jp` / `lg.jp` domains. Nothing is stored, request bodies aren't logged, and responses are `no-store`. Calendar files are generated in the browser.
@@ -60,6 +60,6 @@ Every date and amount links to the exact Japanese words it came from. Tap it and
 
 ## Built with
 
-Cloudflare Workers, Workers AI, Llama 3.2 Vision, Llama 3.3, TypeScript, esbuild, Vitest, Playwright, HTML/CSS.
+Cloudflare Workers, Workers AI, Llama 4 Scout, Llama 3.3, Mistral Small 3.1, TypeScript, esbuild, Vitest, Playwright, HTML/CSS.
 
 Built with Llama. LetterLens is an AI helper, not legal or tax advice.

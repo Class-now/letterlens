@@ -5,7 +5,8 @@
 import { classify, GUIDANCE } from "./doc-types";
 import { extractFacts, validateAction } from "./extract";
 import { fallbackAnalysis } from "./fallback";
-import { LANGUAGES, MAX_TEXT_BYTES, TEXT_MODEL, VISION_MODEL } from "./models";
+import { readingOf } from "./readings";
+import { LANGUAGES, MAX_TEXT_BYTES, TEXT_MODEL, VISION_FALLBACK_MODEL, VISION_MODEL } from "./models";
 import { clean, cleanList } from "./sanitize";
 import type { Action, Analysis, DocType, Item, Quote, Term } from "./types";
 
@@ -27,7 +28,11 @@ function asLetter(text: string): string {
 }
 
 function responseOf(out: unknown): unknown {
-  return out && typeof out === "object" && "response" in out ? (out as { response: unknown }).response : out;
+  if (!out || typeof out !== "object") return out;
+  if ("response" in out) return (out as { response: unknown }).response;
+  // Newer Workers AI models answer in the OpenAI chat-completion shape.
+  const content = (out as { choices?: { message?: { content?: unknown } }[] }).choices?.[0]?.message?.content;
+  return content === undefined ? out : content;
 }
 
 export function parseJson(out: unknown): Record<string, unknown> {
@@ -64,38 +69,42 @@ async function chatJson(ai: AiRunner, system: string, user: string, maxTokens: n
 
 // --- transcription -------------------------------------------------------------------------
 
-let visionAgreed = false;
-
-/** Japanese text of a photographed letter. The vision model needs a one-time license agreement. */
+/** Japanese text of a photographed letter. If the first vision model fails or returns nothing, the second one reads it. */
 export async function transcribe(ai: AiRunner, image: Uint8Array, mime: string): Promise<{ text: string; trace: Trace }> {
   const steps: TraceStep[] = [];
-  if (!visionAgreed) {
-    await timed(steps, { step: "license", model: VISION_MODEL, ms: 0 }, () => ai.run(VISION_MODEL, { prompt: "agree" }));
-    visionAgreed = true;
-  }
   const url = `data:${mime};base64,${toBase64(image)}`;
-  const out = await timed(steps, { step: "read", model: VISION_MODEL, ms: 0 }, () =>
-    ai.run(VISION_MODEL, {
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text:
-                "Transcribe all Japanese text in this image exactly as written. Keep the line breaks. " +
-                "Do not translate, summarise or add anything. Output only the text.",
-            },
-            { type: "image_url", image_url: { url } },
-          ],
-        },
-      ],
-      temperature: 0,
-      max_tokens: 2048,
-    }),
-  );
-  const r = responseOf(out);
-  return { text: typeof r === "string" ? truncateUtf8(r.trim(), MAX_TEXT_BYTES) : "", trace: { fallback: false, steps } };
+  const read = async (model: string): Promise<string> => {
+    const out = await timed(steps, { step: "read", model, ms: 0 }, () =>
+      ai.run(model, {
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text:
+                  "Transcribe all Japanese text in this image exactly as written. Keep the line breaks. " +
+                  "Do not translate, summarise or add anything. Output only the text.",
+              },
+              { type: "image_url", image_url: { url } },
+            ],
+          },
+        ],
+        temperature: 0,
+        max_tokens: 2048,
+      }),
+    );
+    const r = responseOf(out);
+    return typeof r === "string" ? r.trim() : "";
+  };
+  let text = "";
+  try {
+    text = await read(VISION_MODEL);
+  } catch {
+    // try the second model below
+  }
+  if (!text) text = await read(VISION_FALLBACK_MODEL);
+  return { text: truncateUtf8(text, MAX_TEXT_BYTES), trace: { fallback: false, steps } };
 }
 
 /** Cut to at most `max` UTF-8 bytes without splitting a character, so /api/analyze accepts it. */
@@ -266,7 +275,7 @@ async function analyzeWithAi(ai: AiRunner, text: string, language: string, ruleT
       writeDropped.push(`glossary term "${term}" is not in the letter`);
       continue;
     }
-    glossary.push({ term, reading: clean((x as { reading?: unknown }).reading, 60), meaning: clean((x as { meaning?: unknown }).meaning, 160) });
+    glossary.push({ term, reading: readingOf(term, clean((x as { reading?: unknown }).reading, 60)), meaning: clean((x as { meaning?: unknown }).meaning, 160) });
   }
 
   const warnings: string[] = [];

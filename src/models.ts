@@ -1,5 +1,8 @@
 // Workers AI model ids, in one place.
-export const VISION_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
+// Vision: measured on the five sample letters (character accuracy of the transcription):
+// Llama 4 Scout 97–100%, Mistral Small 3.1 94–99% (one upstream error), Llama 3.2 11B Vision garbled dates.
+export const VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
+export const VISION_FALLBACK_MODEL = "@cf/mistralai/mistral-small-3.1-24b-instruct";
 export const TEXT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 /** Output languages: code → name used in prompts. */

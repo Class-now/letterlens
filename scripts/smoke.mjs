@@ -64,9 +64,15 @@ try {
   await desktop.locator('[data-sample="a-resident-tax"]').click();
   await desktop.waitForSelector("#result:not([hidden]) .action", { timeout: 20_000 });
   const actions = await desktop.locator("#actions .action").count();
-  check(actions === 4, `resident tax checklist has 4 actions (got ${actions})`);
+  // Against a deployed URL the real model answers: it may add "pay in full" and words the summary differently.
+  if (server) {
+    check(actions === 4, `resident tax checklist has 4 actions (got ${actions})`);
+    check(/98,400/.test(await desktop.locator("#summary").textContent()), "summary mentions the total 98,400 yen");
+  } else {
+    check(actions >= 4, `resident tax checklist has at least 4 actions (got ${actions})`);
+    check(/24,900/.test(await desktop.locator("#actions").textContent()), "first instalment 24,900 yen is shown");
+  }
   check((await desktop.locator("#steps li.done").count()) >= 3, "progress steps all marked done");
-  check(/98,400/.test(await desktop.locator("#summary").textContent()), "summary mentions the total 98,400 yen");
   check((await desktop.locator("#glossary dt ruby").count()) > 0, "glossary shows furigana");
   check((await desktop.locator("#trace tr").count()) > 0, "AI trace has steps");
 

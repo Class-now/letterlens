@@ -28,7 +28,7 @@ Output languages: English, Simplified Chinese, Vietnamese, Nepali, Korean, Portu
 
 ```mermaid
 flowchart LR
-  U[Browser<br/>photo / text / sample] -->|POST /api/read| R[Vision model<br/>Llama 3.2 11B Vision<br/>transcribe Japanese]
+  U[Browser<br/>photo / text / sample] -->|POST /api/read| R[Vision model<br/>Llama 4 Scout<br/>transcribe Japanese]
   R --> T[Letter text]
   U -->|POST /api/analyze| C{Classify<br/>keyword rules}
   T --> C
@@ -47,7 +47,7 @@ flowchart LR
 ```
 
 - **Cloudflare Worker** (TypeScript, `src/worker.ts`, `src/api.ts`) serves the static page from `public/` and the JSON APIs under `/api/*`. No database, no KV, no file storage.
-- **Workers AI**: `@cf/meta/llama-3.2-11b-vision-instruct` reads photos; `@cf/meta/llama-3.3-70b-instruct-fp8-fast` does classification, extraction, writing and follow-ups (`src/models.ts`).
+- **Workers AI**: `@cf/meta/llama-4-scout-17b-16e-instruct` reads photos (97–100% character accuracy on the five sample letters; `@cf/mistralai/mistral-small-3.1-24b-instruct` takes over if it fails); `@cf/meta/llama-3.3-70b-instruct-fp8-fast` does classification, extraction, writing and follow-ups (`src/models.ts`).
 - **Deterministic extractors** (`src/extract.ts`): Japanese era and western dates (令和8年6月30日, 2026年6月30日, 6月30日(火) with the year taken from context, 平成31年/令和元年, full-width digits, ranges), yen amounts (12,300円, ￥12,300) and instalment tables (第1期…第4期). They return character spans.
 - **Doc-type classifier and guidance** (`src/doc-types.ts`): resident tax, health insurance, student pension deferral, My Number renewal, payment reminder. Static, sourced guidance on where to pay and which office to ask, with links to official pages.
 - **Frontend**: vanilla TypeScript bundled by esbuild into `public/app.js`. Works from 360 px phones up to two-column desktop, supports dark mode and printing, and has an `aria-live` progress list.
@@ -99,6 +99,6 @@ node scripts/record-demo.mjs [baseUrl] [outDir]   # 1280×720 demo recording →
 
 MIT. See [LICENSE](LICENSE).
 
-**Built with Llama.** LetterLens uses Meta Llama 3.2 (11B Vision Instruct) and Llama 3.3 (70B Instruct) through Cloudflare Workers AI. Llama 3.2 is licensed under the [Llama 3.2 Community License](https://www.llama.com/llama3_2/license/), Copyright © Meta Platforms, Inc. All Rights Reserved. Llama 3.3 is licensed under the [Llama 3.3 Community License](https://www.llama.com/llama3_3/license/), Copyright © Meta Platforms, Inc. All Rights Reserved.
+**Built with Llama.** LetterLens uses Meta Llama 4 (Scout 17B Instruct) and Llama 3.3 (70B Instruct) through Cloudflare Workers AI, with Mistral Small 3.1 (Apache 2.0) as the backup reader. Llama 4 is licensed under the [Llama 4 Community License](https://www.llama.com/llama4/license/), Copyright © Meta Platforms, Inc. All Rights Reserved. Llama 3.3 is licensed under the [Llama 3.3 Community License](https://www.llama.com/llama3_3/license/), Copyright © Meta Platforms, Inc. All Rights Reserved.
 
 LetterLens is an AI helper, not legal or tax advice. Always check the original letter and ask the office that sent it if anything is unclear.
