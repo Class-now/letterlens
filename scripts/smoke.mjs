@@ -62,7 +62,7 @@ try {
   await desktop.screenshot({ path: join(shots, "01-home-desktop.png") });
 
   await desktop.locator('[data-sample="a-resident-tax"]').click();
-  await desktop.waitForSelector("#result:not([hidden]) .action", { timeout: 20_000 });
+  await desktop.waitForSelector("#result:not([hidden]) .action", { timeout: 60_000 });
   const actions = await desktop.locator("#actions .action").count();
   // Against a deployed URL the real model answers: it may add "pay in full" and words the summary differently.
   if (server) {
@@ -103,7 +103,7 @@ try {
   await mobile.goto(base);
   await mobile.screenshot({ path: join(shots, "03-home-mobile.png") });
   await mobile.locator('[data-sample="e-tax-reminder"]').tap();
-  await mobile.waitForSelector("#result:not([hidden]) .action", { timeout: 20_000 });
+  await mobile.waitForSelector("#result:not([hidden]) .action", { timeout: 60_000 });
   check((await mobile.locator("#actions .action").count()) >= 1, "mobile: reminder checklist renders");
   const overflow = await mobile.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check(overflow <= 0, `mobile: no horizontal overflow (${overflow}px)`);
