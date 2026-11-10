@@ -40,7 +40,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  /* "Segoe UI" comes first: on Japanese Windows system-ui is a Japanese font that draws Vietnamese
+     accents beside the letter (Tiê´ng). Japanese text still falls back to the system's Japanese font. */
+  font: 16px/1.55 "Segoe UI", system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
 a { color: var(--accent); }
 h1, h2, h3 { line-height: 1.25; }

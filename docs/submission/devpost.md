@@ -4,7 +4,7 @@
 
 ## Inspiration
 
-About 3.9 million foreign residents live in Japan, and every year they get envelopes from the city office, the pension service and the tax office. The letters are written in dense administrative Japanese: 特別区民税・都民税 納税通知書, 国民健康保険料 納入通知書, 督促状. I'm a Japanese university student studying foreign languages and cultures, and I've watched international classmates struggle with these letters. Even when they could translate the words, they couldn't tell what they had to do, by when, or what would happen if they didn't.
+About 3.9 million foreign residents live in Japan, and every year they get envelopes from the city office, the pension service and the tax office. The letters are written in dense administrative Japanese: 特別区民税・都民税 納税通知書, 国民健康保険料 納入通知書, 督促状. I'm a Japanese university student studying foreign languages and cultures. These letters are hard going even for native speakers. For someone still learning the language, a translation app turns the words into English but doesn't say what they have to do, by when, or what happens if they don't.
 
 Translation alone isn't enough. A resident tax bill with four instalments, each with its own date and amount, is a to-do list in disguise, and missing one of them means late fees (延滞金). We wanted a tool that turns a letter into actions, and that is honest about what it doesn't know.
 
@@ -29,7 +29,7 @@ Every date and amount links to the exact Japanese words it came from. Tap it and
 - **Deterministic extractors** parse Japanese era dates (令和8年 = 2026, including the 平成31年/令和元年 boundary), full-width digits, dates without a year, date ranges, yen amounts and instalment tables, and return the character span of each match.
 - **Safety and privacy:** the letter is treated as untrusted data (prompt-injection hardening), output is length-clipped, and URLs are stripped unless they point to official `go.jp` / `lg.jp` domains. Nothing is stored, request bodies aren't logged, and responses are `no-store`. Calendar files are generated in the browser.
 - **Offline mode:** without an AI binding the same worker returns a deterministic analysis, so the demo runs without a login and the app keeps working if the model fails.
-- **Tests:** 85 vitest tests cover the extractors, the five sample letters, the API with a fake AI binding (a hallucinated date gets dropped, injected instructions are ignored, the fallback and the limits work), calendar output and UI formatting. A headless Chromium smoke test runs the real page on desktop and mobile.
+- **Tests:** 101 vitest tests cover the extractors, the five sample letters, the API with a fake AI binding (a hallucinated date gets dropped, a reply in the wrong language is rewritten, injected instructions are ignored, the fallback and the limits work), calendar output and UI formatting. A headless Chromium smoke test runs the real page on desktop and mobile.
 
 ## Challenges we ran into
 

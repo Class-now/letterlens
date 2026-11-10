@@ -168,7 +168,9 @@ try {
   await show("#ask-h");
   await page.locator("#question").pressSequentially("Can I pay at a convenience store?", { delay: 35 });
   await page.click("#ask-form button");
-  await page.waitForFunction(() => document.querySelector("#chat .msg.ai")?.textContent !== "…");
+  const askFrom = now();
+  await page.waitForFunction(() => document.querySelector("#chat .msg.ai")?.textContent !== "…", undefined, { timeout: 60_000 });
+  waits.push([askFrom, now()]);
   await pause(4000);
 
   await scene("10-trace", "The AI trace shows each step, the model used, and any fact the checker dropped.");
